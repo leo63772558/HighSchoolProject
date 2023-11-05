@@ -1,0 +1,231 @@
+import pgzrun
+import random
+HEIGHT = 600
+WIDTH = 1200
+p1 = Actor('p2')
+p1.x = 200
+p1.y = 440
+tw1=1
+knief=Actor('knief')
+kniefs = []
+kfs=[]
+smokes=[]
+sks = []
+p2 = Actor('p1')
+p2.x = 1000
+p2.y = 440
+tw2=1
+m1 = 5
+m2 = 5
+up1=5
+up2 = 5
+qi1 = 50
+qi2 = 50
+q1=0
+q2=0 
+Q1 = 0
+Q2=0
+HP1 = 100
+HP2 = 100
+d1 = 0
+d2 = 0
+TheWorld=1
+theworld=1
+TWspeed=0
+twspeed=0
+background = Actor('background')
+kniefspeed=8
+smokespeed=8
+dio = 1
+jojo=1
+isLoose = False
+sounds.bgm.play(-1)
+over=0
+
+
+def draw():
+    screen.fill('black')
+    background.draw()
+    p1.draw()
+    p2.draw()
+    screen.draw.line((0, 500), (1200, 500), 'white')
+    screen.draw.text(str(HP1), (p1.x-10, p1.y+70),fontsize=25, color='white')
+    screen.draw.text(str(HP2), (p2.x-10, p2.y+70),fontsize=25, color='white')
+    screen.draw.text("HP:", (p1.x-40, p1.y+70), fontsize=25, color='white')
+    screen.draw.text("HP:", (p2.x-40, p2.y+70), fontsize=25, color='white')
+    screen.draw.text("P1", (p1.x-10, p1.y+95), fontsize=25, color='red')
+    screen.draw.text("P2", (p2.x-10, p2.y+95), fontsize=25, color='red')
+    screen.draw.text("POWER:", (p1.x-70, p1.y-75), fontsize=25, color='pink')
+    screen.draw.text("POWER:", (p2.x-70, p2.y-75), fontsize=25, color='pink')
+    screen.draw.line((p1.x-50, p1.y+90), (p1.x+qi1, p1.y+90), 'blue')
+    screen.draw.line((p2.x-50, p2.y+90), (p2.x+qi2, p2.y+90), 'blue')
+    screen.draw.text(str(Q1), (p1.x+15, p1.y-75), fontsize=25, color='pink')
+    screen.draw.text(str(Q2), (p2.x+15, p2.y-75), fontsize=25, color='pink')
+    for knief in kniefs:
+        knief.draw()
+    for kf in kfs:
+        kf.draw()
+    for smoke in smokes:
+        smoke.draw()
+    for sk in sks:
+        sk.draw()
+    if isLoose and HP1 <=0:
+        screen.draw.text("P1游戏失败！", (50, HEIGHT/2),
+                         fontsize=90, fontname='s', color='red')
+    if isLoose and HP2 <= 0:
+        screen.draw.text("P2游戏失败！", (50, HEIGHT/2),
+                         fontsize=90, fontname='s', color='red')
+
+def update():
+    global m1, up1, qi1, HP1, HP2, d1, d2, q1, q2, Q1, Q2, up2, qi2, TheWorld, TWspeed, theworld, twspeed, m2, kniefspeed, dio, jojo, smokespeed, isLoose
+    if isLoose:
+        return 
+    if HP1 <= 0:
+        sounds.gameover.play()
+        isLoose = True
+
+    if HP2 <= 0:
+        sounds.gameover.play()
+        isLoose = True
+    if p1.x <= 25:
+        p1.x = 25
+    if p1.x >= 1175:
+        p1.x = 1175
+    if p2.x <= 25:
+        p2.x = 25
+    if p2.x >= 1175:
+        p2.x = 1175
+    if keyboard.a:
+        p1.image = 'p2_2'
+        p1.x = p1.x-m1
+    if keyboard.d:
+        p1.image='p2'
+        p1.x = p1.x+m1
+    if keyboard.w:
+        p1.y = p1.y-up1
+        if up1 == 5:
+            qi1 = qi1-1.22
+    if keyboard.s:
+        p1.y = p1.y+5
+        qi1 = qi1+1.22
+    if p1.y <= 50:
+        d1 = 8
+        up1 = 0
+    if p1.y >= 441:
+        d1 = 0
+        qi1 = 50
+        up1 = 5
+    if p1.y >= 441:
+        p1.y = 440
+    p1.y = p1.y+d1
+    p2.y = p2.y+d2
+    if keyboard.lshift:
+        q1 = q1+1
+        if (q1 % 30 == 0):
+            Q1 = Q1+1
+    
+    if keyboard.j:
+        p2.image = 'p1'
+        p2.x = p2.x-m2
+    if keyboard.l:
+        p2.image = 'p1_1'
+        p2.x = p2.x+m2
+    if keyboard.i:
+        p2.y = p2.y-up2
+        if up2 == 5:
+            qi2 = qi2-1.22
+    if keyboard.k:
+        p2.y = p2.y+5
+        qi2 = qi2+1.22
+    if p2.y <= 50:
+        d2 = 8
+        up2 = 0
+    if p2.y >= 441:
+        d2 = 0
+        qi2 = 50
+        up2 = 5
+    if p2.y >= 441:
+        p2.y = 440
+    if keyboard.n:
+        q2 = q2+1
+        if (q2 % 30 == 0):
+            Q2 = Q2+1
+    TheWorld -= TWspeed
+    if TheWorld ==0:
+        TWspeed = 0
+        up2 = 5
+        m2=5
+        jojo=1
+    theworld -= twspeed
+    if theworld == 0:
+        twspeed = 0
+        up1 = 5
+        m1 = 5
+        dio=1
+    for knief in kniefs:
+        knief.x= knief.x+kniefspeed
+        if knief.colliderect(p2):
+            HP2 -= 1/4
+    for kf in kfs:
+        kf.x = kf.x-kniefspeed
+        if kf.colliderect(p2):
+            HP2 -= 1/4
+    for smoke in smokes:
+        smoke.x = smoke.x-smokespeed
+        if smoke.colliderect(p1):
+            HP1 -= 1/4
+    for sk in sks:
+        sk.x = sk.x+smokespeed
+        if sk.colliderect(p2):
+            HP1 -= 1/4
+
+
+def on_key_down(key):
+    global m1, up1, qi1, HP1, HP2, d1, d2, q1, q2, Q1, Q2, up2, qi2, TheWorld, TWspeed, theworld, twspeed, m2,dio,jojo
+    if isLoose:
+        return
+    if key == keys.Q:
+        if Q1>=10:
+            Q1 = Q1-10
+            if Q2-10:
+                sounds.theworld.play()
+                TheWorld=500
+                TWspeed=1
+                up2 = 0
+                m2=0
+                jojo=0
+    if key == keys.U:
+        if Q2 >= 10:
+            Q2 = Q2-10
+            if Q2-10:
+                sounds.jojotheworld.play()
+                theworld = 500
+                twspeed = 1
+                up1 = 0
+                m1 = 0
+                dio=0
+    if dio==1:
+        if key == keys.E:
+            if p1.image == 'p2':
+                knief = Actor('knief')
+                knief.x = p1.x
+                knief.y = p1.y
+                kniefs.append(knief)  # 把新针加入列表中 # 游戏失败，针停止旋转
+            if p1.image == 'p2_2':
+                kf = Actor('knief2')
+                kf.x = p1.x
+                kf.y = p1.y
+                kfs.append(kf)
+    if jojo == 1:
+        if key == keys.O:
+            if p2.image == 'p1':
+                smoke = Actor('smoke')
+                smoke.x = p2.x
+                smoke.y = p2.y
+                smokes.append(smoke)  # 把新针加入列表中 # 游戏失败，针停止旋转
+            if p2.image == 'p1_1':
+                sk = Actor('smoke2')
+                sk.x = p2.x
+                sk.y = p2.y
+                sks.append(sk)
+pgzrun.go()
